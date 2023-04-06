@@ -12,25 +12,35 @@
 #include "frameobject.h"
 #include "traceback.h"
 
+
+
+
 #if defined( Py_TRACE_REFS ) || defined( Py_REF_DEBUG )
-DL_IMPORT(long) _Py_RefTotal;
+DL_IMPORT(long) _Py_RefTotal;          //如果需要debug, 那么我们就定义这个ref变量.全局.   DL_IMPORT这个宏等于没写.
 #endif
+
+
+
+
 
 /* Object allocation routines used by NEWOBJ and NEWVAROBJ macros.
    These are used by the individual routines for object creation.
    Do not call them otherwise, they do not initialize the object! */
-
 #ifdef COUNT_ALLOCS
-static PyTypeObject *type_list;
+static PyTypeObject *type_list;   //type_list用来存全局的object. 是一个链表.
 extern int tuple_zero_allocs, fast_tuple_allocs;
 extern int quick_int_allocs, quick_neg_int_allocs;
 extern int null_strings, one_strings;
+
+
+
+
 void
 dump_counts(void)
 {
 	PyTypeObject *tp;
 
-	for (tp = type_list; tp; tp = tp->tp_next)
+	for (tp = type_list; tp; tp = tp->tp_next) //打印这个链表. typeobject就是一个链表.
 		fprintf(stderr, "%s alloc'd: %d, freed: %d, max in use: %d\n",
 			tp->tp_name, tp->tp_alloc, tp->tp_free,
 			tp->tp_maxalloc);
@@ -41,6 +51,10 @@ dump_counts(void)
 	fprintf(stderr, "null strings: %d, 1-strings: %d\n",
 		null_strings, one_strings);
 }
+
+
+
+
 
 PyObject *
 get_counts(void)
@@ -69,14 +83,22 @@ get_counts(void)
 	return result;
 }
 
-void
+
+
+
+
+
+
+
+
+void  // 对tp进行引用计数增加.
 inc_count(PyTypeObject *tp)
 {
 	if (tp->tp_alloc == 0) {
 		/* first time; insert in linked list */
 		if (tp->tp_next != NULL) /* sanity check */
 			Py_FatalError("XXX inc_count sanity check");
-		tp->tp_next = type_list;
+		tp->tp_next = type_list;  //添加到链表的最后.
 		type_list = tp;
 	}
 	tp->tp_alloc++;

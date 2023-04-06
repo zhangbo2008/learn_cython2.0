@@ -1,5 +1,5 @@
 
-/* Lowest-level memory allocation interface */
+/* Lowest-level memory allocation interface */  // python的内存分配实现.
 
 #ifndef Py_PYMEM_H
 #define Py_PYMEM_H
@@ -24,6 +24,37 @@ extern "C" {
 
    See the comment block at the end of this file for two scenarios
    showing how to use this to use a different allocator. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef PyCore_MALLOC_FUNC
 #undef PyCore_REALLOC_FUNC
@@ -75,7 +106,7 @@ extern void PyCore_FREE_FUNC PyCore_FREE_PROTO;
  * Raw memory interface
  * ====================
  */
-
+// 使用函数来实现
 /* Functions */
 
 /* Function wrappers around PyCore_MALLOC and friends; useful if you
@@ -91,14 +122,14 @@ extern DL_IMPORT(void) PyMem_Free(void *);
 /* Starting from Python 1.6, the wrappers Py_{Malloc,Realloc,Free} are
    no longer supported. They used to call PyErr_NoMemory() on failure. */
 
-/* Macros */
+/* Macros */  //使用macro来实现.
 #define PyMem_MALLOC(n)         PyCore_MALLOC(n)
 #define PyMem_REALLOC(p, n)     PyCore_REALLOC((void *)(p), (n))
 #define PyMem_FREE(p)           PyCore_FREE((void *)(p))
 
 /*
  * Type-oriented memory interface
- * ==============================
+ * ==============================   //下面是带类型的malloc函数.
  */
 
 /* Functions */

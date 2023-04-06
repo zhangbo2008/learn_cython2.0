@@ -27,16 +27,39 @@
 	我把不用的文件放到无用文件不用看文件夹里面了.
 
 代码当然从Objects开始看.
-	object.h
+	object.h   .c
+	listobject.h    .c
+	依赖pymeme.h. 先看这个.
+	看intobject.h 是python的大整数的实现.
+	Objects/intobject.c 是具体实现.
+
+		int对象:
+			//最上层是int对象. 他用一个head和一个long . 所以这个版本不是大整数.只能用long来存储.
+			typedef struct {
+				PyObject_HEAD
+				long ob_ival;
+			} PyIntObject;
 
 
+			#define PyObject_HEAD \
+				int ob_refcnt; \
+				struct _typeobject *ob_type;  一个引用计数,一个是表示类别.
 
+			所以组合之后是:
+			typedef struct {
+				int ob_refcnt; \
+				struct _typeobject *ob_type;
+				long ob_ival;
+			} PyIntObject;
 
+			//example
+			PyIntObject _Py_ZeroStruct = {
+				PyObject_HEAD_INIT(&PyInt_Type)
+				0
+			};//#define PyObject_HEAD_INIT(type) 1, type,
 
-
-
-
-
+			//所以综上是:
+			PyIntObject _Py_ZeroStruct = {1,PyInt_Type,0}// 引用计数是1, 类型是int,然后数值是0.
 
 
 

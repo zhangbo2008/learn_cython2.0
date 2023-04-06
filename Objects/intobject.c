@@ -37,7 +37,7 @@ err_ovf(char *msg)
    Therefore we use a dedicated allocation scheme with a much lower
    overhead (in space and time) than straight malloc(): a simple
    dedicated free list, filled when necessary with memory from malloc().
-*/
+*/   //做了一个比malloc方案更快的方法.
 
 #define BLOCK_SIZE	1000	/* 1K less typical malloc overhead */
 #define BHEAD_SIZE	8	/* Enough for a 64-bit pointer */
@@ -283,7 +283,7 @@ int_sub(PyIntObject *v, PyIntObject *w)
 Integer overflow checking used to be done using a double, but on 64
 bit machines (where both long and double are 64 bit) this fails
 because the double doesn't have enough precision.  John Tromp suggests
-the following algorithm:
+the following algorithm: 为了防止整数溢出,我们用下面的算法.
 
 Suppose again we normalize a and b to be nonnegative.
 Let ah and al (bh and bl) be the high and low 32 bits of a (b, resp.).
@@ -407,6 +407,8 @@ int_mul(PyIntObject *v, PyIntObject *w)
 	return err_ovf("integer multiplication");
 }
 
+
+// 带余除法.
 static int
 i_divmod(register PyIntObject *x, register PyIntObject *y,
          long *p_xdivy, long *p_xmody)
@@ -448,6 +450,8 @@ i_divmod(register PyIntObject *x, register PyIntObject *y,
 	return 0;
 }
 
+
+//除法是带余除法.
 static PyObject *
 int_div(PyIntObject *x, PyIntObject *y)
 {
@@ -474,6 +478,18 @@ int_divmod(PyIntObject *x, PyIntObject *y)
 		return NULL;
 	return Py_BuildValue("(ll)", d, m);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 static PyObject *
 int_pow(PyIntObject *v, PyIntObject *w, PyIntObject *z)

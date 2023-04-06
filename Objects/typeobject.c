@@ -4,7 +4,7 @@
 #include "Python.h"
 
 /* Type object implementation */
-
+//类型对象.
 static PyObject *
 type_getattr(PyTypeObject *t, char *name)
 {
@@ -23,7 +23,7 @@ type_getattr(PyTypeObject *t, char *name)
 	return NULL;
 }
 
-static PyObject *
+static PyObject *//先打印类型,再返回类型.
 type_repr(PyTypeObject *v)
 {
 	char buf[100];

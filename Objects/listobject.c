@@ -9,11 +9,13 @@
 #include <sys/types.h>		/* For size_t */
 #endif
 
+
+//来看这个list对象的个个方法如何实现.PyTryBlock是块. 这个算法就是想上取整数使得n变成PyTryBlock的整数倍.
 #define ROUNDUP(n, PyTryBlock) \
 	((((n)+(PyTryBlock)-1)/(PyTryBlock))*(PyTryBlock))
 
 static int
-roundupsize(int n)
+roundupsize(int n)// 让n向上得到一个10倍数或者100倍数.
 {
 	if (n < 500)
 		return ROUNDUP(n, 10);
@@ -34,7 +36,7 @@ PyList_New(int size)
 		return NULL;
 	}
 	nbytes = size * sizeof(PyObject *);
-	/* Check for overflow */
+	/* Check for overflow */ //是否发生乘法溢出. 大数乘法.
 	if (nbytes / sizeof(PyObject *) != (size_t)size) {
 		return PyErr_NoMemory();
 	}
@@ -48,7 +50,7 @@ PyList_New(int size)
 	if (size <= 0) {
 		op->ob_item = NULL;
 	}
-	else {
+	else {// size大于0. 那么就分配列表数据这个耳机指针.
 		op->ob_item = (PyObject **) PyMem_MALLOC(nbytes);
 		if (op->ob_item == NULL) {
 			PyObject_FREE(PyObject_AS_GC(op));
@@ -57,7 +59,7 @@ PyList_New(int size)
 	}
 	PyObject_INIT_VAR(op, &PyList_Type, size);
 	for (i = 0; i < size; i++)
-		op->ob_item[i] = NULL;
+		op->ob_item[i] = NULL;//所有内容都设置为null指针.
 	PyObject_GC_Init(op);
 	return (PyObject *) op;
 }
@@ -92,6 +94,17 @@ PyList_GetItem(PyObject *op, int i)
 	return ((PyListObject *)op) -> ob_item[i];
 }
 
+
+
+
+
+
+
+
+
+
+
+
 int
 PyList_SetItem(register PyObject *op, register int i,
                register PyObject *newitem)
@@ -112,15 +125,25 @@ PyList_SetItem(register PyObject *op, register int i,
 	p = ((PyListObject *)op) -> ob_item + i;
 	olditem = *p;
 	*p = newitem;
-	Py_XDECREF(olditem);
+	Py_XDECREF(olditem);//old降低引用.
 	return 0;
 }
 
-static int
+
+
+
+
+
+
+
+
+
+static int   //ins1表示往列表中添加一个元素.
 ins1(PyListObject *self, int where, PyObject *v)
 {
 	int i;
 	PyObject **items;
+	//监测合法性.
 	if (v == NULL) {
 		PyErr_BadInternalCall();
 		return -1;
@@ -131,6 +154,7 @@ ins1(PyListObject *self, int where, PyObject *v)
 		return -1;
 	}
 	items = self->ob_item;
+	//开辟大一个空间.
 	NRESIZE(items, PyObject *, self->ob_size+1);
 	if (items == NULL) {
 		PyErr_NoMemory();
@@ -141,13 +165,17 @@ ins1(PyListObject *self, int where, PyObject *v)
 	if (where > self->ob_size)
 		where = self->ob_size;
 	for (i = self->ob_size; --i >= where; )
-		items[i+1] = items[i];
+		items[i+1] = items[i];//后移一个.
 	Py_INCREF(v);
 	items[where] = v;
 	self->ob_item = items;
 	self->ob_size++;
 	return 0;
 }
+
+
+
+
 
 int
 PyList_Insert(PyObject *op, int where, PyObject *newitem)
@@ -169,6 +197,20 @@ PyList_Append(PyObject *op, PyObject *newitem)
 	return ins1((PyListObject *)op,
 		(int) ((PyListObject *)op)->ob_size, newitem);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Methods */
 
@@ -528,6 +570,16 @@ list_inplace_repeat(PyListObject *self, int n)
   	return NULL;
 }
 
+
+
+
+
+
+
+
+
+
+
 static int
 list_ass_item(PyListObject *a, int i, PyObject *v)
 {
@@ -566,7 +618,7 @@ listinsert(PyListObject *self, PyObject *args)
 }
 
 /* Define NO_STRICT_LIST_APPEND to enable multi-argument append() */
-
+// 解析函数PyArg_ParseTuple
 #ifndef NO_STRICT_LIST_APPEND
 #define PyArg_ParseTuple_Compat1 PyArg_ParseTuple
 #else

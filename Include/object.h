@@ -69,21 +69,36 @@ whose size is determined when the object is allocated.
 #else /* !Py_TRACE_REFS */
 #define PyObject_HEAD \
 	int ob_refcnt; \
-	struct _typeobject *ob_type;
+	struct _typeobject *ob_type;   //pyobject 里面 一个整数表示引用计数. 一个typeobject表示类别. 
 #define PyObject_HEAD_INIT(type) 1, type,
 #endif /* !Py_TRACE_REFS */
 
 #define PyObject_VAR_HEAD \
 	PyObject_HEAD \
-	int ob_size; /* Number of items in variable part */
- 
+	int ob_size; /* Number of items in variable part */   //python 用来记录这个东西里面有多少个元素的.
+
+
+
+//======================python底层的2中类型!!!!!!!!!!!!!!!!!!!!
 typedef struct _object {
 	PyObject_HEAD
 } PyObject;
 
 typedef struct {
 	PyObject_VAR_HEAD
-} PyVarObject;
+} PyVarObject;   //python里面的变长对象. list string这种.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -99,7 +114,7 @@ reach zero (e.g., for type objects).
 NB: the methods for certain type groups are now contained in separate
 method blocks.
 */
-
+// 下面是pyObject的一些方法, 比如 unaryfunc表示的是一个指针函数. 输入一个PyObject *, 输出一个PyObject * .
 typedef PyObject * (*unaryfunc)(PyObject *);
 typedef PyObject * (*binaryfunc)(PyObject *, PyObject *);
 typedef PyObject * (*ternaryfunc)(PyObject *, PyObject *, PyObject *);
@@ -192,8 +207,18 @@ typedef int (*cmpfunc)(PyObject *, PyObject *);
 typedef PyObject *(*reprfunc)(PyObject *);
 typedef long (*hashfunc)(PyObject *);
 
+
+
+
+
+
+
+
+
+
+//py的type类型.
 typedef struct _typeobject {
-	PyObject_VAR_HEAD
+	PyObject_VAR_HEAD         //本身也是一个python对象.
 	char *tp_name; /* For printing */
 	int tp_basicsize, tp_itemsize; /* For allocation */
 	
@@ -240,17 +265,30 @@ typedef struct _typeobject {
 
 #ifdef COUNT_ALLOCS
 	/* these must be last */
-	int tp_alloc;
+	int tp_alloc;   //分配了的数量.
 	int tp_free;
 	int tp_maxalloc;
-	struct _typeobject *tp_next;
+	struct _typeobject *tp_next;  //是一个链表.
 #endif
-} PyTypeObject;
+} PyTypeObject; 
+
+
+
+
+
+
+
+
+
+
+
 
 extern DL_IMPORT(PyTypeObject) PyType_Type; /* The type of type objects */
 
 #define PyType_Check(op) ((op)->ob_type == &PyType_Type)
 
+
+//一些object的方法.
 /* Generic operations on objects */
 extern DL_IMPORT(int) PyObject_Print(PyObject *, FILE *, int);
 extern DL_IMPORT(PyObject *) PyObject_Repr(PyObject *);
@@ -390,7 +428,7 @@ extern DL_IMPORT(long) _Py_RefTotal;
 
 #ifndef Py_TRACE_REFS
 #ifdef COUNT_ALLOCS
-#define _Py_NewReference(op) (inc_count((op)->ob_type), _Py_RefTotal++, (op)->ob_refcnt = 1)
+#define _Py_NewReference(op) (inc_count((op)->ob_type), _Py_RefTotal++, (op)->ob_refcnt = 1)               //引用计数的新建. 类别的计数加一, 然后对象的引用计数=1.
 #else
 #define _Py_NewReference(op) (_Py_RefTotal++, (op)->ob_refcnt = 1)
 #endif

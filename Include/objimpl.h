@@ -158,7 +158,7 @@ extern DL_IMPORT(void) _PyObject_Del(PyObject *);
 #define PyObject_Del(op) _PyObject_Del((PyObject *)(op))
 
 /* Macros trading binary compatibility for speed. See also pymem.h.
-   Note that these macros expect non-NULL object pointers.*/
+   Note that these macros expect non-NULL object pointers.*///初始化一个pyobject
 #define PyObject_INIT(op, typeobj) \
 	( (op)->ob_type = (typeobj), _Py_NewReference((PyObject *)(op)), (op) )
 #define PyObject_INIT_VAR(op, typeobj, size) \
@@ -177,7 +177,7 @@ extern DL_IMPORT(void) _PyObject_Del(PyObject *);
 	(typeobj), (n)) )
 
 #define PyObject_DEL(op) PyObject_FREE(op)
-
+//自定义allocator的example代码.
 /* This example code implements an object constructor with a custom
    allocator, where PyObject_New is inlined, and shows the important
    distinction between two steps (at least):
